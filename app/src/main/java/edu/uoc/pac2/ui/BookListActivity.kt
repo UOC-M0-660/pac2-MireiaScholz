@@ -1,14 +1,15 @@
 package edu.uoc.pac2.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import edu.uoc.pac2.MyApplication
+import com.google.firebase.firestore.FirebaseFirestore
 import edu.uoc.pac2.R
 import edu.uoc.pac2.data.Book
-import edu.uoc.pac2.data.BooksInteractor
+
 
 /**
  * An activity representing a list of Books.
@@ -16,8 +17,10 @@ import edu.uoc.pac2.data.BooksInteractor
 class BookListActivity : AppCompatActivity() {
 
     private val TAG = "BookListActivity"
-
     private lateinit var adapter: BooksListAdapter
+    private var db = FirebaseFirestore.getInstance()
+
+    private val books: MutableList<Book> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,8 +32,6 @@ class BookListActivity : AppCompatActivity() {
 
         // Get Books
         getBooks()
-
-        // TODO: Add books data to Firestore [Use once for new projects with empty Firestore Database]
     }
 
     // Init Top Toolbar
@@ -47,12 +48,23 @@ class BookListActivity : AppCompatActivity() {
         val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
         // Init Adapter
-        adapter = BooksListAdapter(emptyList())
+        adapter = BooksListAdapter(books)
         recyclerView.adapter = adapter
     }
 
-    // TODO: Get Books and Update UI
+    // Fetch books information from firebase
     private fun getBooks() {
+        db.collection("books")
+                .get()
+                .addOnSuccessListener { querySnapshot ->
+                    val fetchedBooks: List <Book> = querySnapshot.documents.mapNotNull {it.toObject (Book:: class .java)}
+                    books.addAll(fetchedBooks)
+                    adapter.notifyDataSetChanged()
+                }
+                .addOnFailureListener { exception ->
+                    Log.w(TAG, "Error getting documents: ", exception)
+                }
+
 
     }
 
