@@ -1,6 +1,9 @@
 package edu.uoc.pac2
 
 import android.app.Application
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import androidx.room.Room
 import edu.uoc.pac2.data.ApplicationDatabase
 import edu.uoc.pac2.data.BooksInteractor
@@ -26,7 +29,12 @@ class MyApplication : Application() {
     }
 
     fun hasInternetConnection(): Boolean {
-        // TODO: Add Internet Check logic.
-        return true
+        val cm = applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+        var result = false
+        if (activeNetwork != null) {
+            result = activeNetwork.isConnectedOrConnecting
+        }
+        return result
     }
 }
