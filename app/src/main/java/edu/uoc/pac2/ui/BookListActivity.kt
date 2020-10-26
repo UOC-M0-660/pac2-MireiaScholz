@@ -1,5 +1,6 @@
 package edu.uoc.pac2.ui
 
+import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -7,6 +8,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
+import edu.uoc.pac2.MyApplication
 import edu.uoc.pac2.R
 import edu.uoc.pac2.data.Book
 
@@ -18,11 +20,13 @@ class BookListActivity : AppCompatActivity() {
 
     private val TAG = "BookListActivity"
     private lateinit var adapter: BooksListAdapter
-    private var db = FirebaseFirestore.getInstance()
+    private lateinit var firebaseDB: FirebaseFirestore
 
     private val books: MutableList<Book> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        firebaseDB = FirebaseFirestore.getInstance()
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_book_list)
 
@@ -54,27 +58,33 @@ class BookListActivity : AppCompatActivity() {
 
     // Fetch books information from firebase
     private fun getBooks() {
-        db.collection("books")
-                .get()
-                .addOnSuccessListener { querySnapshot ->
-                    val fetchedBooks: List <Book> = querySnapshot.documents.mapNotNull {it.toObject (Book:: class .java)}
-                    books.addAll(fetchedBooks)
-                    adapter.notifyDataSetChanged()
-                }
-                .addOnFailureListener { exception ->
-                    Log.w(TAG, "Error getting documents: ", exception)
-                }
-
-
+        loadBooksFromLocalDb()
+        if ((application as MyApplication).hasInternetConnection()) {
+            firebaseDB.collection("books")
+                    .get()
+                    .addOnSuccessListener { querySnapshot ->
+                        val fetchedBooks: List<Book> = querySnapshot.documents.mapNotNull { it.toObject(Book::class.java) }
+                        books.addAll(fetchedBooks)
+                        adapter.notifyDataSetChanged()
+                        AsyncTask.execute {
+                            saveBooksToLocalDatabase(books)
+                        }
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.w(TAG, "Error getting documents: ", exception)
+                    }
+        }
     }
 
-    // TODO: Load Books from Room
     private fun loadBooksFromLocalDb() {
-        throw NotImplementedError()
+        AsyncTask.execute {
+            val localBooks: List<Book> = (application as MyApplication).getBooksInteractor().getAllBooks()
+            books.addAll(localBooks)
+            adapter.notifyDataSetChanged()
+        }
     }
 
-    // TODO: Save Books to Local Storage
     private fun saveBooksToLocalDatabase(books: List<Book>) {
-        throw NotImplementedError()
+        (application as MyApplication).getBooksInteractor().saveBooks(books)
     }
 }
