@@ -64,11 +64,15 @@ class BookListActivity : AppCompatActivity() {
                     .get()
                     .addOnSuccessListener { querySnapshot ->
                         val fetchedBooks: List<Book> = querySnapshot.documents.mapNotNull { it.toObject(Book::class.java) }
-                        books.addAll(fetchedBooks)
-                        adapter.notifyDataSetChanged()
+
                         AsyncTask.execute {
-                            saveBooksToLocalDatabase(books)
+                            saveBooksToLocalDatabase(fetchedBooks)
+                            loadBooksFromLocalDb()
+                            this.runOnUiThread {
+                                adapter.notifyDataSetChanged()
+                            }
                         }
+
                     }
                     .addOnFailureListener { exception ->
                         Log.w(TAG, "Error getting documents: ", exception)
@@ -79,12 +83,14 @@ class BookListActivity : AppCompatActivity() {
     private fun loadBooksFromLocalDb() {
         AsyncTask.execute {
             val localBooks: List<Book> = (application as MyApplication).getBooksInteractor().getAllBooks()
+            books.clear()
             books.addAll(localBooks)
-            adapter.notifyDataSetChanged()
         }
     }
 
     private fun saveBooksToLocalDatabase(books: List<Book>) {
         (application as MyApplication).getBooksInteractor().saveBooks(books)
     }
+
+
 }
