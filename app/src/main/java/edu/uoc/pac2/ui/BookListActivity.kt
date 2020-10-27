@@ -59,6 +59,7 @@ class BookListActivity : AppCompatActivity() {
     // Fetch books information from firebase
     private fun getBooks() {
         loadBooksFromLocalDb()
+        adapter.notifyDataSetChanged()
         if ((application as MyApplication).hasInternetConnection()) {
             firebaseDB.collection("books")
                     .get()
