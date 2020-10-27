@@ -6,4 +6,5 @@
     <string name="share_info">Share to other apps</string>
 
     <string name="book_not_found">Book not found</string>
+    <string name="book_cover_image">Book cover image</string>
 </resources>
