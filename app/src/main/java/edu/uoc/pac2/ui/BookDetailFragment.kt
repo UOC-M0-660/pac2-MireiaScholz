@@ -46,12 +46,14 @@ class BookDetailFragment : Fragment() {
     }
 
     private fun initUI(book: Book) {
+        // Init toolbar
         toolbar.title = book.title
         activity?.setActionBar(toolbar)
         backButton.setOnClickListener {
             activity?.onBackPressed()
         }
 
+        // Init fragment content
         bookDetailAuthor.text = book.author
         bookDetailDate.text = book.publicationDate
         bookDetailDescription.text = book.description

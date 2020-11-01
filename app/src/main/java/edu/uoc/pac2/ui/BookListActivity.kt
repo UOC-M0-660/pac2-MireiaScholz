@@ -58,8 +58,11 @@ class BookListActivity : AppCompatActivity() {
 
     // Fetch books information from firebase
     private fun getBooks() {
+        // Always load books from local db
         loadBooksFromLocalDb()
         adapter.notifyDataSetChanged()
+
+        // Update existing books and add new books if internet connection is enabled
         if ((application as MyApplication).hasInternetConnection()) {
             firebaseDB.collection("books")
                     .get()
