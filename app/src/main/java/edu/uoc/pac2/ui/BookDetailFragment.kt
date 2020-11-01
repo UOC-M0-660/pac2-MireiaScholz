@@ -46,10 +46,16 @@ class BookDetailFragment : Fragment() {
     }
 
     private fun initUI(book: Book) {
-        bookDetailAuthor.text = book.title
+        toolbar.title = book.title
+        activity?.setActionBar(toolbar)
+        backButton.setOnClickListener {
+            activity?.onBackPressed()
+        }
+
+        bookDetailAuthor.text = book.author
         bookDetailDate.text = book.publicationDate
         bookDetailDescription.text = book.description
-        Picasso.get().load(book.urlImage).into(bookCoverImageView)
+        Picasso.get().load(book.urlImage).into(image)
         fabDetail.setOnClickListener {
             shareContent(book)
         }

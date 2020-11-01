@@ -66,7 +66,6 @@ class BooksListAdapter(private var books: List<Book>) : RecyclerView.Adapter<Boo
             book.uid?.let { uid ->
                 val intent = Intent(view.context, BookDetailActivity::class.java).apply {
                     putExtra(BookDetailFragment.ARG_ITEM_ID, uid)
-                    putExtra(BookDetailActivity.ARG_ITEM_TITLE, book.title)
                 }
                 view.context.startActivity(intent)
                 (view.context as Activity).overridePendingTransition(R.anim.translate_in_bottom, R.anim.translate_in_top)

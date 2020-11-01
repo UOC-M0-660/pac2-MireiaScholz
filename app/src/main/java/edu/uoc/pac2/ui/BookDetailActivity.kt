@@ -3,7 +3,6 @@ package edu.uoc.pac2.ui
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import edu.uoc.pac2.R
-import kotlinx.android.synthetic.main.activity_book_detail.*
 
 /**
  * An activity representing a single Book detail screen.
@@ -13,8 +12,8 @@ class BookDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_book_detail)
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        //setSupportActionBar(toolbar)
+        //supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
@@ -29,9 +28,8 @@ class BookDetailActivity : AppCompatActivity() {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             val itemID = intent.getIntExtra(BookDetailFragment.ARG_ITEM_ID, -1)
-            val itemTitle = intent.getStringExtra(ARG_ITEM_TITLE)
 
-            supportActionBar?.title = itemTitle
+            //supportActionBar?.title = itemTitle
             val fragment = BookDetailFragment.newInstance(itemID)
             supportFragmentManager.beginTransaction()
                     .add(R.id.frameLayout, fragment)
@@ -39,7 +37,8 @@ class BookDetailActivity : AppCompatActivity() {
         }
     }
 
-    companion object {
-        const val ARG_ITEM_TITLE = "itemTitleKey"
+    override fun onBackPressed() {
+        super.onBackPressed()
+        overridePendingTransition(R.anim.translate_out_top, R.anim.translate_out_bottom)
     }
 }
