@@ -1,5 +1,6 @@
 package edu.uoc.pac2.ui
 
+import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -49,6 +50,16 @@ class BookDetailFragment : Fragment() {
         bookDetailDate.text = book.publicationDate
         bookDetailDescription.text = book.description
         Picasso.get().load(book.urlImage).into(bookCoverImageView)
+        fabDetail.setOnClickListener {
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, "${book.title}\n${book.urlImage}")
+                type = "text/plain"
+            }
+
+            val shareIntent = Intent.createChooser(sendIntent, null)
+            startActivity(shareIntent)
+        }
     }
 
     // TODO: Share Book Title and Image URL
