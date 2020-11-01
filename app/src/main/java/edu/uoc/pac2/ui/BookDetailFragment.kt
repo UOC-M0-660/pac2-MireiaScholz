@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.squareup.picasso.Picasso
 import edu.uoc.pac2.MyApplication
 import edu.uoc.pac2.R
 import edu.uoc.pac2.data.Book
@@ -44,10 +45,10 @@ class BookDetailFragment : Fragment() {
     }
 
     private fun initUI(book: Book) {
-        //TODO: Poner la picture de book.imageURL
-        bookDetailAuthor.text = book.author
+        bookDetailAuthor.text = book.title
         bookDetailDate.text = book.publicationDate
         bookDetailDescription.text = book.description
+        Picasso.get().load(book.urlImage).into(bookCoverImageView)
     }
 
     // TODO: Share Book Title and Image URL

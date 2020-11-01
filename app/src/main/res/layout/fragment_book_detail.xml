@@ -8,7 +8,7 @@
     android:paddingBottom="16dp">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/bookCoverImageView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:contentDescription="@string/book_cover_image"
@@ -24,10 +24,9 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:text="titulo"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toEndOf="@+id/bookCoverImageView"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -36,8 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
-        android:text="fecha"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toEndOf="@+id/bookCoverImageView"
         app:layout_constraintTop_toBottomOf="@+id/bookDetailAuthor" />
 
     <ScrollView
