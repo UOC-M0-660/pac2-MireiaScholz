@@ -5,6 +5,9 @@
 *.ap_
 *.aab
 
+# Intellij Settings
+/.idea/
+
 # Files for the ART/Dalvik VM
 *.dex
 

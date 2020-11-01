@@ -1,14 +1,17 @@
 package edu.uoc.pac2.ui
 
+import android.os.AsyncTask
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.firestore.FirebaseFirestore
 import edu.uoc.pac2.MyApplication
 import edu.uoc.pac2.R
 import edu.uoc.pac2.data.Book
-import edu.uoc.pac2.data.BooksInteractor
+
 
 /**
  * An activity representing a list of Books.
@@ -16,10 +19,14 @@ import edu.uoc.pac2.data.BooksInteractor
 class BookListActivity : AppCompatActivity() {
 
     private val TAG = "BookListActivity"
-
     private lateinit var adapter: BooksListAdapter
+    private lateinit var firebaseDB: FirebaseFirestore
+
+    private val books: MutableList<Book> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        firebaseDB = FirebaseFirestore.getInstance()
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_book_list)
 
@@ -29,8 +36,6 @@ class BookListActivity : AppCompatActivity() {
 
         // Get Books
         getBooks()
-
-        // TODO: Add books data to Firestore [Use once for new projects with empty Firestore Database]
     }
 
     // Init Top Toolbar
@@ -47,22 +52,49 @@ class BookListActivity : AppCompatActivity() {
         val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
         // Init Adapter
-        adapter = BooksListAdapter(emptyList())
+        adapter = BooksListAdapter(books)
         recyclerView.adapter = adapter
     }
 
-    // TODO: Get Books and Update UI
+    // Fetch books information from firebase
     private fun getBooks() {
+        // Always load books from local db
+        loadBooksFromLocalDb()
+        adapter.notifyDataSetChanged()
 
+        // Update existing books and add new books if internet connection is enabled
+        if ((application as MyApplication).hasInternetConnection()) {
+            firebaseDB.collection("books")
+                    .get()
+                    .addOnSuccessListener { querySnapshot ->
+                        val fetchedBooks: List<Book> = querySnapshot.documents.mapNotNull { it.toObject(Book::class.java) }
+
+                        AsyncTask.execute {
+                            saveBooksToLocalDatabase(fetchedBooks)
+                            loadBooksFromLocalDb()
+                            this.runOnUiThread {
+                                adapter.notifyDataSetChanged()
+                            }
+                        }
+
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.w(TAG, "Error getting documents: ", exception)
+                    }
+        }
     }
 
-    // TODO: Load Books from Room
     private fun loadBooksFromLocalDb() {
-        throw NotImplementedError()
+        AsyncTask.execute {
+            val localBooks: List<Book> = (application as MyApplication).getBooksInteractor().getAllBooks()
+            books.clear()
+            books.addAll(localBooks)
+        }
     }
 
-    // TODO: Save Books to Local Storage
     private fun saveBooksToLocalDatabase(books: List<Book>) {
-        throw NotImplementedError()
+        (application as MyApplication).getBooksInteractor().saveBooks(books)
     }
+
+
 }
