@@ -51,20 +51,19 @@ class BookDetailFragment : Fragment() {
         bookDetailDescription.text = book.description
         Picasso.get().load(book.urlImage).into(bookCoverImageView)
         fabDetail.setOnClickListener {
-            val sendIntent: Intent = Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_TEXT, "${book.title}\n${book.urlImage}")
-                type = "text/plain"
-            }
-
-            val shareIntent = Intent.createChooser(sendIntent, null)
-            startActivity(shareIntent)
+            shareContent(book)
         }
     }
 
-    // TODO: Share Book Title and Image URL
     private fun shareContent(book: Book) {
-        throw NotImplementedError()
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, "${book.title}\n${book.urlImage}")
+            type = "text/plain"
+        }
+
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        startActivity(shareIntent)
     }
 
     companion object {
